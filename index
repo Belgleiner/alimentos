@@ -17,52 +17,65 @@
             color: var(--primary-color);
             display: flex;
             justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            margin: 0;
             padding: 20px;
+            box-sizing: border-box;
         }
 
         .container {
             background: white;
             padding: 2rem;
             border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
             width: 100%;
-            max-width: 500px;
+            max-width: 450px;
         }
 
         h2 {
             text-align: center;
             border-bottom: 2px solid var(--accent-color);
             padding-bottom: 10px;
+            margin-top: 0;
         }
 
         .form-group {
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.2rem;
         }
 
         label {
             display: block;
             margin-bottom: 0.5rem;
             font-weight: bold;
+            font-size: 0.9rem;
         }
 
         input, select {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
+            padding: 12px;
+            border: 1px solid #ccc;
             border-radius: 4px;
-            box-sizing: border-box; /* Garante que o padding não quebre o layout */
+            box-sizing: border-box;
+            font-size: 1rem;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--accent-color);
         }
 
         button {
             width: 100%;
-            padding: 12px;
+            padding: 14px;
             background-color: var(--accent-color);
             color: white;
             border: none;
             border-radius: 4px;
             cursor: pointer;
-            font-size: 1rem;
-            transition: background 0.3s;
+            font-size: 1.1rem;
+            font-weight: bold;
+            transition: background 0.3s ease;
         }
 
         button:hover {
@@ -75,12 +88,20 @@
             background-color: #e8f5e9;
             border-left: 5px solid var(--accent-color);
             display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .info-text {
-            font-size: 0.85rem;
-            color: #666;
-            margin-top: 10px;
+            font-size: 0.8rem;
+            color: #7f8c8d;
+            margin-top: 15px;
+            line-height: 1.4;
+            text-align: center;
         }
     </style>
 </head>
@@ -92,13 +113,13 @@
     <div class="form-group">
         <label for="base">Base de Cálculo:</label>
         <select id="base" onchange="toggleSalario()">
-            <option value="minimo">Salário Mínimo Vigente (R$ 1.518,00)</option>
-            <option value="rendimentos">Rendimentos Líquidos (Salário do Pagador)</option>
+            <option value="minimo">Salário Mínimo (R$ 1.518,00)</option>
+            <option value="rendimentos">Rendimentos do Pagador (Salário)</option>
         </select>
     </div>
 
     <div class="form-group" id="container-salario" style="display:none;">
-        <label for="valor_base">Informe o Valor do Salário (R$):</label>
+        <label for="valor_base">Informe o Valor Líquido (R$):</label>
         <input type="number" id="valor_base" placeholder="Ex: 3500.00" step="0.01">
     </div>
 
@@ -115,32 +136,48 @@
     </div>
 
     <p class="info-text">
-        * Cálculo meramente exemplificativo baseado no binômio Necessidade x Possibilidade.
+        Nota: Este cálculo utiliza o valor base multiplicado pela porcentagem definida. 
+        Para o público leigo: consulte sempre um advogado ou defensor público.
     </p>
 </div>
 
 <script>
-    const SALARIO_MINIMO_2026 = 1518.00; // Atualizado para projeção de 2026
+    // Valor atualizado
+    const SALARIO_MINIMO_ATUAL = 1518.00;
 
     function toggleSalario() {
         const base = document.getElementById('base').value;
         const container = document.getElementById('container-salario');
-        container.style.display = (base === 'rendimentos') ? 'block' : 'none';
+        const inputSalario = document.getElementById('valor_base');
+        
+        if (base === 'rendimentos') {
+            container.style.display = 'block';
+            inputSalario.focus();
+        } else {
+            container.style.display = 'none';
+            inputSalario.value = ''; // Limpa o campo ao esconder
+        }
+        // Esconde o resultado anterior ao mudar a base
+        document.getElementById('resultado').style.display = 'none';
     }
 
     function calcular() {
         const baseTipo = document.getElementById('base').value;
-        const porcentagem = parseFloat(document.getElementById('porcentagem').value);
+        const porcentagemInput = document.getElementById('porcentagem').value;
+        const valorBaseInput = document.getElementById('valor_base').value;
+        
         let valorBase = 0;
+        let porcentagem = parseFloat(porcentagemInput);
 
         if (baseTipo === 'minimo') {
-            valorBase = SALARIO_MINIMO_2026;
+            valorBase = SALARIO_MINIMO_ATUAL;
         } else {
-            valorBase = parseFloat(document.getElementById('valor_base').value);
+            valorBase = parseFloat(valorBaseInput);
         }
 
-        if (isNaN(valorBase) || isNaN(porcentagem)) {
-            alert("Por favor, preencha todos os campos corretamente.");
+        // Validação básica
+        if (isNaN(valorBase) || isNaN(porcentagem) || valorBase <= 0 || porcentagem <= 0) {
+            alert("Por favor, insira valores válidos e maiores que zero.");
             return;
         }
 
@@ -149,7 +186,8 @@
         const divResultado = document.getElementById('resultado');
         const spanValor = document.getElementById('valor_final');
         
-        spanValor.innerHTML = `O valor da pensão é de: <strong>R$ ${resultado.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</strong>`;
+        spanValor.innerHTML = `O valor da pensão será de: <br><b style="font-size: 1.2rem; color: #27ae60;">R$ ${resultado.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</b>`;
+        
         divResultado.style.display = 'block';
     }
 </script>
