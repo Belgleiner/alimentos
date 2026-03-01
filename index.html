@@ -1,160 +1,149 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora de Pensão Alimentícia</title>
-    <style>
-        :root {
-            --primary-color: #2c3e50;
-            --accent-color: #27ae60;
-            --bg-color: #f4f7f6;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculadora de Pensão Alimentícia - por Belizza Araújo</title>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Satisfy&display=swap');
+    
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #fdf7fa; padding: 20px; text-align: center; color: #444; }
+    
+    .container { background: white; max-width: 600px; margin: auto; padding: 30px; border-radius: 18px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
+    
+    h1 { color: #b76e79; margin-bottom: 5px; font-size: 1.8em; }
+    
+    .subtitulo { font-size: 0.9em; color: #888; margin-bottom: 20px; }
+    
+    .satisfy { font-family: 'Satisfy', cursive; font-size: 1.1em; color: #b76e79; }
+    
+    label { display: block; margin-top: 15px; text-align: left; font-weight: bold; color: #7a4a52; }
+    
+    select, input { width: 100%; padding: 12px; margin-top: 5px; border-radius: 8px; border: 1px solid #ddd; box-sizing: border-box; font-size: 16px; }
+    
+    input:focus, select:focus { outline: none; border-color: #d88fa0; box-shadow: 0 0 5px rgba(216, 143, 160, 0.3); }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--primary-color);
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            min-height: 100vh;
-            margin: 0;
-            padding: 20px;
-            box-sizing: border-box;
-        }
+    .status-sm { font-size: 0.8em; color: #999; text-align: left; margin-top: 5px; font-style: italic; }
 
-        .container {
-            background: white;
-            padding: 2rem;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            width: 100%;
-            max-width: 450px;
-        }
+    button { width: 100%; padding: 15px; margin-top: 20px; border: none; border-radius: 10px; background: #d88fa0; color: white; font-weight: bold; font-size: 1.1em; cursor: pointer; transition: 0.3s; }
+    
+    button:hover { background: #c5768b; }
+    
+    .resultado { margin-top: 25px; background: #fff0f4; padding: 20px; border-radius: 10px; text-align: left; border-left: 5px solid #d88fa0; display: none; font-family: 'Segoe UI', Arial, sans-serif; }
+    
+    .aviso { margin-top: 30px; font-size: 0.9em; color: #999; line-height: 1.5; }
 
-        h2 {
-            text-align: center;
-            border-bottom: 2px solid var(--accent-color);
-            padding-bottom: 10px;
-            margin-top: 0;
-        }
+    #btnWhats { background-color: #25d366; margin-top: 10px; }
+    #btnWhats:hover { background-color: #1ebe57; }
 
-        .form-group {
-            margin-bottom: 1.2rem;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: bold;
-            font-size: 0.9rem;
-        }
-
-        input, select {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-            font-size: 1rem;
-        }
-
-        button {
-            width: 100%;
-            padding: 14px;
-            background-color: var(--accent-color);
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 1.1rem;
-            font-weight: bold;
-            transition: background 0.3s ease;
-        }
-
-        button:hover {
-            background-color: #219150;
-        }
-
-        #resultado {
-            margin-top: 1.5rem;
-            padding: 1rem;
-            background-color: #e8f5e9;
-            border-left: 5px solid var(--accent-color);
-            display: none;
-        }
-
-        .info-text {
-            font-size: 0.8rem;
-            color: #7f8c8d;
-            margin-top: 15px;
-            line-height: 1.4;
-            text-align: center;
-        }
-    </style>
+    @media (max-width: 500px) { 
+        .container { padding: 20px; width: 95%; } 
+        h1 { font-size: 1.5em; }
+    }
+</style>
 </head>
 <body>
 
 <div class="container">
-    <h2>Calculadora de Pensão</h2>
-    
-    <div class="form-group">
-        <label for="base">Base de Cálculo:</label>
-        <select id="base" onchange="toggleSalario()">
-            <option value="minimo">Salário Mínimo (R$ 1.518,00)</option>
-            <option value="rendimentos">Rendimentos do Pagador (Salário)</option>
-        </select>
+    <h1>🌸 Calculadora de Pensão</h1>
+    <div class="subtitulo">
+        Simule valores com base no binômio necessidade e possibilidade - por Belizza Araújo
     </div>
 
-    <div class="form-group" id="container-salario" style="display:none;">
-        <label for="valor_base">Informe o Valor Líquido (R$):</label>
+    <label>Base do cálculo:</label>
+    <select id="base" onchange="toggleCampos()">
+        <option value="minimo">Salário Mínimo Vigente</option>
+        <option value="rendimentos">Rendimentos do Pagador (Salário)</option>
+    </select>
+    <div id="sm-status" class="status-sm">Buscando valor atualizado...</div>
+
+    <div id="campo-salario" style="display:none;">
+        <label>Valor do Salário Líquido (R$):</label>
         <input type="number" id="valor_base" placeholder="Ex: 3500.00" step="0.01">
     </div>
 
-    <div class="form-group">
-        <label for="porcentagem">Porcentagem da Pensão (%):</label>
-        <input type="number" id="porcentagem" placeholder="Ex: 30" step="0.1">
+    <label>Porcentagem da pensão (%):</label>
+    <input type="number" id="porcentagem" placeholder="Ex: 30" step="0.1">
+
+    <button onclick="calcular()">Calcular Valor Mensal</button>
+
+    <div id="resultado" class="resultado"></div>
+
+    <button id="btnWhats" onclick="enviarWhatsApp()" style="display:none;">Enviar para WhatsApp</button>
+
+    <div class="aviso">
+        Esta ferramenta é um simulador para fins informativos. O valor fixado depende sempre da análise judicial de cada caso. <br>
+        🌸 <span class="satisfy">Desenvolvido por Belizza Araújo – Oficiala de Justiça do TJPE</span>
     </div>
-
-    <button onclick="calcular()">Calcular Valor</button>
-
-    <div id="resultado">
-        <strong>Resultado Estimado:</strong><br>
-        <span id="valor_final"></span>
-    </div>
-
-    <p class="info-text">
-        * Cálculo meramente exemplificativo. Consulte sempre um profissional jurídico.
-    </p>
 </div>
 
 <script>
-    const SALARIO_MINIMO_ATUAL = 1518.00;
+    let salarioMinimoOficial = 1518.00; // Valor de fallback (2026)
 
-    function toggleSalario() {
-        const base = document.getElementById('base').value;
-        const container = document.getElementById('container-salario');
-        container.style.display = (base === 'rendimentos') ? 'block' : 'none';
-        document.getElementById('resultado').style.display = 'none';
+    // Busca automática do Salário Mínimo (API Banco Central)
+    async function buscarSalarioMinimo() {
+        try {
+            const response = await fetch('https://api.bcb.gov.br/dados/serie/bcdata.sgs.1619/dados/ultimos/1?formato=json');
+            const data = await response.json();
+            if (data && data[0]) {
+                salarioMinimoOficial = parseFloat(data[0].valor);
+                document.getElementById('sm-status').innerText = `Salário Mínimo hoje: R$ ${salarioMinimoOficial.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+            }
+        } catch (e) {
+            document.getElementById('sm-status').innerText = "Valor base para cálculo: R$ 1.518,00";
+        }
     }
+
+    function toggleCampos() {
+        const base = document.getElementById('base').value;
+        document.getElementById('campo-salario').style.display = (base === 'rendimentos') ? 'block' : 'none';
+        document.getElementById('resultado').style.display = 'none';
+        document.getElementById('btnWhats').style.display = 'none';
+    }
+
+    let textoCompartilhamento = "";
 
     function calcular() {
         const baseTipo = document.getElementById('base').value;
         const porcentagem = parseFloat(document.getElementById('porcentagem').value);
-        let valorBase = (baseTipo === 'minimo') ? SALARIO_MINIMO_ATUAL : parseFloat(document.getElementById('valor_base').value);
+        let valorBase = (baseTipo === 'minimo') ? salarioMinimoOficial : parseFloat(document.getElementById('valor_base').value);
 
-        if (isNaN(valorBase) || isNaN(porcentagem)) {
-            alert("Preencha todos os campos.");
+        if (isNaN(valorBase) || isNaN(porcentagem) || valorBase <= 0 || porcentagem <= 0) {
+            alert("Por favor, preencha os valores corretamente.");
             return;
         }
 
-        const resultado = (valorBase * (porcentagem / 100));
-        const spanValor = document.getElementById('valor_final');
+        const valorFinal = (valorBase * (porcentagem / 100));
+        const resDiv = document.getElementById('resultado');
         
-        spanValor.innerHTML = `Valor da pensão: <br><strong>R$ ${resultado.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</strong>`;
-        document.getElementById('resultado').style.display = 'block';
+        const valorFormatado = valorFinal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        const baseFormatada = valorBase.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+        resDiv.innerHTML = `
+            <strong>Resultado do Cálculo:</strong><br><br>
+            • Base utilizada: ${baseFormatada}<br>
+            • Porcentagem: ${porcentagem}%<br>
+            • <strong>Valor da Pensão: ${valorFormatado}</strong><br><br>
+            <small>Cálculo realizado em: ${new Date().toLocaleDateString('pt-BR')}</small>
+        `;
+
+        textoCompartilhamento = `*Simulação de Pensão Alimentícia*%0A%0A` +
+                                `• Base: ${baseFormatada}%0A` +
+                                `• Porcentagem: ${porcentagem}%25%0A` +
+                                `• *Valor Estimado: ${valorFormatado}*%0A%0A` +
+                                `_Simulador por Belizza Araújo_`;
+
+        resDiv.style.display = 'block';
+        document.getElementById('btnWhats').style.display = 'block';
     }
+
+    function enviarWhatsApp() {
+        const url = `https://api.whatsapp.com/send?text=${textoCompartilhamento}`;
+        window.open(url, '_blank');
+    }
+
+    // Carregar valor ao iniciar
+    buscarSalarioMinimo();
 </script>
 
 </body>
