@@ -1,23 +1,31 @@
 <script>
-    // Valor oficial vigente em Março de 2026
+    // Valor oficial vigente para 2026 (Decreto 12.797/2025)
+    // Definido como constante para carregamento instantâneo
     let smOficial = 1621.00; 
 
     async function buscarSM() {
         const statusElement = document.getElementById('sm-status');
+        
+        // Exibe o valor padrão imediatamente para não travar o usuário
+        statusElement.innerText = `Valor Base (Vigente 2026): R$ ${smOficial.toLocaleString('pt-BR', {minimumFractionDigits:2})}`;
+
         try {
-            // Tenta buscar na API do Banco Central (Série 1619 - Salário Mínimo)
-            const res = await fetch('https://api.bcb.gov.br/dados/serie/bcdata.sgs.1619/dados/ultimos/1?formato=json');
+            // Tentativa de busca em fonte secundária (mais rápida que o BC)
+            // Usamos um controlador de tempo (timeout) de 2 segundos
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 2000);
+
+            const res = await fetch('https://opas.org.br/api/salario-minimo/', { signal: controller.signal });
             const d = await res.json();
             
-            if(d && d[0] && parseFloat(d[0].valor) > 0) {
-                smOficial = parseFloat(d[0].valor);
+            if(d && d.valor && parseFloat(d.valor) > 0) {
+                smOficial = parseFloat(d.valor);
                 statusElement.innerText = `Salário Mínimo Atualizado: R$ ${smOficial.toLocaleString('pt-BR', {minimumFractionDigits:2})}`;
-            } else {
-                throw new Error("Dados offline");
             }
+            clearTimeout(timeoutId);
         } catch (e) { 
-            // Caso a API demore ou falhe, usa o valor de 2026 já configurado
-            statusElement.innerText = `Valor Base (Vigente 2026): R$ ${smOficial.toLocaleString('pt-BR', {minimumFractionDigits:2})}`;
+            // Se houver erro ou demora, o valor R$ 1.621,00 já está na tela e pronto para uso
+            console.log("Mantendo valor base de segurança.");
         }
     }
 
@@ -26,7 +34,6 @@
         const baseSel = document.getElementById('base').value;
         campoSalario.style.display = (baseSel === 'rendimentos') ? 'block' : 'none';
         
-        // Limpa resultados ao trocar a base para evitar confusão
         document.getElementById('resultado').style.display = 'none';
         document.getElementById('btnWhats').style.display = 'none';
     }
@@ -59,7 +66,6 @@
         res.style.display = 'block';
         document.getElementById('btnWhats').style.display = 'block';
         
-        // Formata mensagem para WhatsApp
         window.msgWhats = `*Calculadora de Pensão - Belizza Araújo*%0A` +
                           `• Base: ${baseFormatada}%0A` +
                           `• Porcentagem: ${porcento}%25%0A` +
@@ -72,6 +78,6 @@
         }
     }
 
-    // Inicia a busca assim que o site abre
+    // Executa a busca ao abrir
     buscarSM();
 </script>
