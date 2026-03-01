@@ -45,7 +45,7 @@
         
         <div class="checkbox-container">
             <input type="checkbox" id="descontosLegais">
-            <label for="descontosLegais">Abater descontos obrigatórios (INSS/IRRF) para obter o valor líquido.</label>
+            <label for="descontosLegais">Abater descontos obrigatórios (INSS/IRPF) para obter o valor líquido.</label>
         </div>
     </div>
 
@@ -64,11 +64,11 @@
 </div>
 
 <script>
-    let smOficial = 1621.00; 
+    let smOficial = 1518.00; // Valor base 2025/2026
 
     function atualizarDisplaySM() {
         const el = document.getElementById('sm-status');
-        if(el) el.innerText = `Valor Base (Vigente 2026): R$ ${smOficial.toLocaleString('pt-BR', {minimumFractionDigits:2})}`;
+        if(el) el.innerText = `Valor Base (Vigente): R$ ${smOficial.toLocaleString('pt-BR', {minimumFractionDigits:2})}`;
     }
 
     async function buscarSM() {
@@ -96,23 +96,42 @@
     function calcular() {
         const porcento = parseFloat(document.getElementById('porcentagem').value);
         const baseTipo = document.getElementById('base').value;
-        let baseV = (baseTipo === 'minimo') ? smOficial : parseFloat(document.getElementById('valor_base').value);
+        let valorBruto = (baseTipo === 'minimo') ? smOficial : parseFloat(document.getElementById('valor_base').value);
         const aplicarDescontos = document.getElementById('descontosLegais').checked;
 
-        if(!porcento || isNaN(baseV) || baseV <= 0) { 
+        if(!porcento || isNaN(valorBruto) || valorBruto <= 0) { 
             alert("Por favor, preencha os valores corretamente."); 
             return; 
         }
 
-        let infoDescontoMensagem = "";
+        let valorCalculo = valorBruto;
+        let detalheDescontos = "";
+
         if(baseTipo === 'rendimentos' && aplicarDescontos) {
-            baseV = baseV * 0.85; 
-            infoDescontoMensagem = "%0A_(Cálculo sobre rendimento líquido estimado)_";
+            // 1. CÁLCULO INSS (Progressivo)
+            let inss = 0;
+            if (valorBruto <= 1412) inss = valorBruto * 0.075;
+            else if (valorBruto <= 2666.68) inss = (valorBruto * 0.09) - 21.18;
+            else if (valorBruto <= 4000.03) inss = (valorBruto * 0.12) - 101.18;
+            else if (valorBruto <= 7786.02) inss = (valorBruto * 0.14) - 181.18;
+            else inss = 908.85;
+
+            // 2. CÁLCULO IRPF (Base = Bruto - INSS)
+            let baseIRPF = valorBruto - inss;
+            let irpf = 0;
+            if (baseIRPF <= 2259.20) irpf = 0;
+            else if (baseIRPF <= 2826.65) irpf = (baseIRPF * 0.075) - 169.44;
+            else if (baseIRPF <= 3751.05) irpf = (baseIRPF * 0.15) - 381.44;
+            else if (baseIRPF <= 4664.68) irpf = (baseIRPF * 0.225) - 662.77;
+            else irpf = (baseIRPF * 0.275) - 896.00;
+
+            valorCalculo = valorBruto - inss - (irpf > 0 ? irpf : 0);
+            detalheDescontos = `%0A_(Descontos: INSS R$ ${inss.toFixed(2)} | IRPF R$ ${irpf.toFixed(2)})_`;
         }
 
-        const total = (baseV * (porcento / 100));
+        const total = (valorCalculo * (porcento / 100));
         const vFinal = total.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
-        const vBase = baseV.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
+        const vBaseExibicao = valorCalculo.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
 
         const resDiv = document.getElementById('resultado');
         resDiv.innerHTML = `
@@ -123,10 +142,10 @@
                 </span>
                 <div style="font-size: 0.85em; color: #666; margin: 10px 0; padding-top: 8px; border-top: 1px solid #eee;">
                     <i class="satisfy" style="font-size: 1.1em;">Dica da Oficiala:</i><br>
-                    Caso não possa pagar, procure um advogado ou a Defensoria Pública.
+                    O valor é calculado sobre o rendimento líquido (após descontos obrigatórios).
                 </div>
                 <small style="color: #999; font-size: 0.75em;">
-                    Base: ${vBase} | Porcentagem: ${porcento}%
+                    Base Líquida: ${vBaseExibicao} | Porcentagem: ${porcento}%
                 </small>
             </div>
         `;
@@ -136,10 +155,10 @@
 
         textoWhats = `*Simulação de Pensão Alimentícia*%0A` +
                      `----------------------------%0A` +
-                     `*Base:* ${vBase}%0A` +
+                     `*Base Líquida:* ${vBaseExibicao}%0A` +
                      `*Porcentagem:* ${porcento}%25%0A` +
                      `*Valor Estimado:* ${vFinal}%0A` +
-                     `${infoDescontoMensagem}%0A%0A` +
+                     `${detalheDescontos}%0A%0A` +
                      `*Dica da Oficiala:* Caso não possa pagar, procure um advogado ou a Defensoria Pública.%0A%0A` +
                      `_Simulador por Belizza Araújo_`;
     }
