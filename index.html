@@ -5,198 +5,32 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Calculadora de Pensão Alimentícia - Belizza Araújo</title>
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Satisfy&display=swap');
-    body { font-family: 'Segoe UI', Arial, sans-serif; background: #fdf7fa; padding: 20px; text-align: center; color: #444; }
-    .container { background: white; max-width: 500px; margin: auto; padding: 30px; border-radius: 18px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); border-top: 6px solid #b76e79; }
-    h1 { color: #b76e79; margin-bottom: 5px; font-size: 1.8em; }
-    .subtitulo { font-size: 0.9em; color: #888; margin-bottom: 25px; }
-    label { display: block; margin-top: 15px; text-align: left; font-weight: bold; color: #7a4a52; }
-    input { width: 100%; padding: 12px; margin-top: 5px; border-radius: 8px; border: 1px solid #ddd; box-sizing: border-box; font-size: 16px; }
-    button { width: 100%; padding: 15px; margin-top: 25px; border: none; border-radius: 10px; background: #d88fa0; color: white; font-weight: bold; font-size: 1.1em; cursor: pointer; transition: 0.3s; }
-    button:hover { background: #c5768b; }
-    .resultado { margin-top: 25px; background: #fff0f4; padding: 20px; border-radius: 10px; text-align: left; border-left: 5px solid #d88fa0; display: none; }
-    .valor-grande { font-size: 1.6em; color: #b76e79; font-weight: bold; margin: 10px 0; }
-    .info-extra { font-size: 0.85em; color: #777; line-height: 1.4; border-top: 1px solid #eccdd4; padding-top: 10px; margin-top: 10px; }
+    @import url('https://fonts.googleapis.com/css2?family=Satisfy&display=swap');
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #fdf7fa; padding: 20px; text-align: center; color: #444; }
+    .container { background: white; max-width: 600px; margin: auto; padding: 30px; border-radius: 18px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); border-top: 6px solid #b76e79; }
+    h1 { color: #b76e79; margin-bottom: 5px; font-size: 1.8em; }
+    .subtitulo { font-size: 0.9em; color: #888; margin-bottom: 20px; }
+    .satisfy { font-family: 'Satisfy', cursive; font-size: 1.1em; color: #b76e79; }
+    label { display: block; margin-top: 15px; text-align: left; font-weight: bold; color: #7a4a52; }
+    select, input { width: 100%; padding: 12px; margin-top: 5px; border-radius: 8px; border: 1px solid #ddd; box-sizing: border-box; font-size: 16px; }
+    .status-sm { font-size: 0.8em; color: #999; text-align: left; margin-top: 5px; }
+    
+    .checkbox-container { display: flex; align-items: center; margin-top: 15px; background: #fff5f7; padding: 12px; border-radius: 8px; border: 1px dashed #d88fa0; }
+    .checkbox-container input { width: auto; margin-right: 10px; cursor: pointer; height: 20px; width: 20px; }
+    .checkbox-container label { margin-top: 0; font-size: 0.85em; cursor: pointer; color: #7a4a52; text-align: left; }
+
+    button { width: 100%; padding: 15px; margin-top: 20px; border: none; border-radius: 10px; background: #d88fa0; color: white; font-weight: bold; font-size: 1.1em; cursor: pointer; transition: 0.3s; }
+    button:hover { background: #c5768b; }
+    .resultado { margin-top: 25px; background: #fff0f4; padding: 20px; border-radius: 10px; text-align: left; border-left: 5px solid #d88fa0; display: none; }
+    #btnWhats { background-color: #25d366; display: none; margin-top: 10px; }
+    .aviso { margin-top: 30px; font-size: 0.85em; color: #999; line-height: 1.5; }
 </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>🌸 Calculadora de Pensão</h1>
-    <div class="subtitulo">Estimativa rápida baseada no rendimento líquido</div>
+    <h1>🌸 Calculadora de Pensão Alimentícia</h1>
+    <div class="subtitulo">Calcule o valor estimado da pensão - por Belizza Araújo</div>
 
-    <label>Salário Bruto (R$):</label>
-    <input type="number" id="salarioBruto" placeholder="Ex: 4500" oninput="calcularPensão()">
-
-    <label>Percentual da Pensão (%):</label>
-    <input type="number" id="porcentagem" placeholder="Ex: 30" oninput="calcularPensão()">
-
-    <div id="resultadoArea" class="resultado">
-        <strong>Valor estimado da pensão:</strong>
-        <div id="valorPensão" class="valor-grande">R$ 0,00</div>
-        
-        <div class="info-extra">
-            <span id="detalhesLíquido"></span><br>
-            <small>*Cálculo considera descontos oficiais de INSS e IRPF (tabela vigente).</small>
-        </div>
-    </div>
-</div>
-
-<script>
-function calcularPensão() {
-    const bruto = parseFloat(document.getElementById('salarioBruto').value) || 0;
-    const perc = parseFloat(document.getElementById('porcentagem').value) || 0;
-
-    if (bruto <= 0 || perc <= 0) {
-        document.getElementById('resultadoArea').style.display = 'none';
-        return;
-    }
-
-    // --- CÁLCULO INSS (Progressivo 2024/2025) ---
-    let inss = 0;
-    if (bruto <= 1412) inss = bruto * 0.075;
-    else if (bruto <= 2666.68) inss = (bruto * 0.09) - 21.18;
-    else if (bruto <= 4000.03) inss = (bruto * 0.12) - 101.18;
-    else if (bruto <= 7786.02) inss = (bruto * 0.14) - 181.18;
-    else inss = 908.85; 
-
-    // --- CÁLCULO IRPF (Sem dependentes) ---
-    const baseIRPF = bruto - inss;
-    let irpf = 0;
-    if (baseIRPF <= 2259.20) irpf = 0;
-    else if (baseIRPF <= 2826.65) irpf = (baseIRPF * 0.075) - 169.44;
-    else if (baseIRPF <= 3751.05) irpf = (baseIRPF * 0.15) - 381.44;
-    else if (baseIRPF <= 4664.68) irpf = (baseIRPF * 0.225) - 662.77;
-    else irpf = (baseIRPF * 0.275) - 896.00;
-
-    const liquido = bruto - inss - (irpf > 0 ? irpf : 0);
-    const resultadoFinal = liquido * (perc / 100);
-
-    // Exibição
-    document.getElementById('resultadoArea').style.display = 'block';
-    document.getElementById('valorPensão').innerText = resultadoFinal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-    document.getElementById('detalhesLíquido').innerHTML = `Salário Líquido Estimado: <strong>R$ ${liquido.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</strong>`;
-}
-</script>
-
-</body>
-</html>        <option value="minimo">Salário Mínimo Vigente</option>
-        <option value="rendimentos">Rendimentos do Pagador</option>
-    </select>
-    <div id="sm-status" class="status-sm">Carregando salário...</div>
-
-    <div id="campo-salario" style="display:none;">
-        <label>Rendimento Bruto (R$):</label>
-        <input type="number" id="valor_base" placeholder="0.00" step="0.01">
-        
-        <div class="checkbox-container">
-            <input type="checkbox" id="descontosLegais">
-            <label for="descontosLegais">Abater descontos obrigatórios (INSS/IRRF) para obter o valor líquido.</label>
-        </div>
-    </div>
-
-    <label>Porcentagem da Pensão (%):</label>
-    <input type="number" id="porcentagem" placeholder="Ex: 30" step="0.1">
-
-    <button onclick="calcular()">Calcular Agora</button>
-
-    <div id="resultado" class="resultado"></div>
-    <button id="btnWhats" onclick="enviarWhatsApp()">Enviar para WhatsApp</button>
-
-    <div class="aviso">
-        Esta ferramenta é apenas um simulador informativo. Para saber o valor exato converse com um advogado ou Defensr Público. <br>
-        🌸 <span class="satisfy">Desenvolvido por Belizza Araújo – Oficiala de Justiça do TJPE</span><br>
-    </div>
-</div>
-
-<script>
-    let smOficial = 1621.00; 
-
-    function atualizarDisplaySM() {
-        const el = document.getElementById('sm-status');
-        if(el) el.innerText = `Valor Base (Vigente 2026): R$ ${smOficial.toLocaleString('pt-BR', {minimumFractionDigits:2})}`;
-    }
-
-    async function buscarSM() {
-        atualizarDisplaySM();
-        try {
-            const controller = new AbortController();
-            setTimeout(() => controller.abort(), 1500);
-            const res = await fetch('https://api.bcb.gov.br/dados/serie/bcdata.sgs.1619/dados/ultimos/1?formato=json', { signal: controller.signal });
-            const d = await res.json();
-            if(d && d[0]) {
-                smOficial = parseFloat(d[0].valor);
-                atualizarDisplaySM();
-            }
-        } catch (e) { console.log("Modo offline."); }
-    }
-
-    function toggleCampos() {
-        document.getElementById('campo-salario').style.display = (document.getElementById('base').value === 'rendimentos') ? 'block' : 'none';
-        document.getElementById('resultado').style.display = 'none';
-        document.getElementById('btnWhats').style.display = 'none';
-    }
-
-    let textoWhats = "";
-
-    function calcular() {
-        const porcento = parseFloat(document.getElementById('porcentagem').value);
-        const baseTipo = document.getElementById('base').value;
-        let baseV = (baseTipo === 'minimo') ? smOficial : parseFloat(document.getElementById('valor_base').value);
-        const aplicarDescontos = document.getElementById('descontosLegais').checked;
-
-        if(!porcento || isNaN(baseV) || baseV <= 0) { 
-            alert("Por favor, preencha os valores corretamente."); 
-            return; 
-        }
-
-        let infoDescontoMensagem = "";
-        if(baseTipo === 'rendimentos' && aplicarDescontos) {
-            baseV = baseV * 0.85; 
-            infoDescontoMensagem = "%0A_(Cálculo sobre rendimento líquido estimado)_";
-        }
-
-        const total = (baseV * (porcento / 100));
-        const vFinal = total.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
-        const vBase = baseV.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
-
-        const resDiv = document.getElementById('resultado');
-        resDiv.innerHTML = `
-            <div style="line-height: 1.6;">
-                <strong style="font-size: 0.9em; color: #7a4a52;">Resultado da Simulação:</strong><br>
-                <span style="font-size: 1.1em; color: #b76e79; font-weight: bold; display:block; margin: 5px 0;">
-                    Pensão: ${vFinal}
-                </span>
-                <div style="font-size: 0.85em; color: #666; margin: 10px 0; padding-top: 8px; border-top: 1px solid #eee;">
-                    <i class="satisfy" style="font-size: 1.1em;">Dica da Oficiala:</i><br>
-                    Caso não possa pagar, procure um advogado ou a Defensoria Pública.
-                </div>
-                <small style="color: #999; font-size: 0.75em;">
-                    Base: ${vBase} | Porcentagem: ${porcento}%
-                </small>
-            </div>
-        `;
-        
-        resDiv.style.display = 'block';
-        document.getElementById('btnWhats').style.display = 'block';
-
-        textoWhats = `*Simulação de Pensão Alimentícia*%0A` +
-                     `----------------------------%0A` +
-                     `*Base:* ${vBase}%0A` +
-                     `*Porcentagem:* ${porcento}%25%0A` +
-                     `*Valor Estimado:* ${vFinal}%0A` +
-                     `${infoDescontoMensagem}%0A%0A` +
-                     `*Dica da Oficiala:* Caso não possa pagar, procure um advogado ou a Defensoria Pública.%0A%0A` +
-                     `_Simulador por Belizza Araújo_`;
-    }
-
-    function enviarWhatsApp() {
-        if (textoWhats !== "") {
-            window.open("https://api.whatsapp.com/send?text=" + textoWhats, '_blank');
-        }
-    }
-
-    buscarSM();
-</script>
-</body>
-</html>
+    <label>Base do cálculo:</label>
+    <select id="base" onchange="toggleCampos()">
