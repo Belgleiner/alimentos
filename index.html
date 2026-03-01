@@ -117,11 +117,23 @@
         const vBase = baseV.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
 
         const resDiv = document.getElementById('resultado');
-        resDiv.innerHTML = `
-            <strong>Resultado da Simulação:<br>
-            <span style="font-size: 0.8em; color: #b76e79; display:block; margin: 10px 0;">Pensão: ${vFinal}</strong><br>
-            Dica da Oficiala: Caso não possa pagar, pocure um advogado ou Defensoria Pública.<span> <br>
-            <small style="color: #888;">Base: ${vBase} | ${porcento}%</small>
+      res.innerHTML = `
+            <div style="line-height: 1.6;">
+                <strong style="font-size: 0.9em; color: #7a4a52;">Resultado da Simulação:</strong><br>
+                
+                <span style="font-size: 1.1em; color: #b76e79; font-weight: bold; display:block; margin: 5px 0;">
+                    Pensão: ${vFinal}
+                </span>
+
+                <div style="font-size: 0.85em; color: #666; margin: 10px 0; padding-top: 8px; border-top: 1px solid #eee;">
+                    <i class="satisfy" style="font-size: 1.1em;">Dica da Oficiala:</i><br>
+                    Caso não possa pagar, procure um advogado ou a Defensoria Pública.
+                </div>
+
+                <small style="color: #999; font-size: 0.75em;">
+                    Base: ${vBase} | Porcentagem: ${porcento}%
+                </small>
+            </div>
         `;
         resDiv.style.display = 'block';
         document.getElementById('btnWhats').style.display = 'block';
