@@ -47,7 +47,7 @@
 <div class="container">
     <h1>🌸 Calculadora de Pensão</h1>
     <div class="subtitulo">
-        Simule valores com base no binômio necessidade e possibilidade - por Belizza Araújo
+        Simule o valor que deverá ser pago de pensão alimentícia. - por Belizza Araújo
     </div>
 
     <label>Base do cálculo:</label>
@@ -72,7 +72,7 @@
     <button id="btnWhats" onclick="enviarWhatsApp()" style="display:none;">Enviar para WhatsApp</button>
 
     <div class="aviso">
-        Esta ferramenta é um simulador para fins informativos. O valor fixado depende sempre da análise judicial de cada caso. <br>
+        Ferramenta criada para auxiliar no cálculo aproximado do valor de pensão aimenticia. O valor depende sempre do valor do salário mínimo ou do valor recebido pelo pagador.<br>
         🌸 <span class="satisfy">Desenvolvido por Belizza Araújo – Oficiala de Justiça do TJPE</span>
     </div>
 </div>
@@ -130,7 +130,8 @@
         textoCompartilhamento = `*Simulação de Pensão Alimentícia*%0A%0A` +
                                 `• Base: ${baseFormatada}%0A` +
                                 `• Porcentagem: ${porcentagem}%25%0A` +
-                                `• *Valor Estimado: ${valorFormatado}*%0A%0A` +
+                                `• *Valor Estimado: ${valorFormatado}*%0A%0A` + <br>
+                                `Dica da Oficiala: Caso não possa pagar, procure um advogado ou Defensoria Pública.
                                 `_Simulador por Belizza Araújo_`;
 
         resDiv.style.display = 'block';
