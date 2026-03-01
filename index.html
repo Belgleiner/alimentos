@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Pensão Alimentícia</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #27ae60;
+            --bg-color: #f4f7f6;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--primary-color);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 450px;
+        }
+
+        h2 {
+            text-align: center;
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 1rem;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: bold;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #219150;
+        }
+
+        #resultado {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background-color: #e8f5e9;
+            border-left: 5px solid var(--accent-color);
+            display: none;
+        }
+
+        .info-text {
+            font-size: 0.8rem;
+            color: #7f8c8d;
+            margin-top: 15px;
+            line-height: 1.4;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Calculadora de Pensão</h2>
+    
+    <div class="form-group">
+        <label for="base">Base de Cálculo:</label>
+        <select id="base" onchange="toggleSalario()">
+            <option value="minimo">Salário Mínimo (R$ 1.518,00)</option>
+            <option value="rendimentos">Rendimentos do Pagador (Salário)</option>
+        </select>
+    </div>
+
+    <div class="form-group" id="container-salario" style="display:none;">
+        <label for="valor_base">Informe o Valor Líquido (R$):</label>
+        <input type="number" id="valor_base" placeholder="Ex: 3500.00" step="0.01">
+    </div>
+
+    <div class="form-group">
+        <label for="porcentagem">Porcentagem da Pensão (%):</label>
+        <input type="number" id="porcentagem" placeholder="Ex: 30" step="0.1">
+    </div>
+
+    <button onclick="calcular()">Calcular Valor</button>
+
+    <div id="resultado">
+        <strong>Resultado Estimado:</strong><br>
+        <span id="valor_final"></span>
+    </div>
+
+    <p class="info-text">
+        * Cálculo meramente exemplificativo. Consulte sempre um profissional jurídico.
+    </p>
+</div>
+
+<script>
+    const SALARIO_MINIMO_ATUAL = 1518.00;
+
+    function toggleSalario() {
+        const base = document.getElementById('base').value;
+        const container = document.getElementById('container-salario');
+        container.style.display = (base === 'rendimentos') ? 'block' : 'none';
+        document.getElementById('resultado').style.display = 'none';
+    }
+
+    function calcular() {
+        const baseTipo = document.getElementById('base').value;
+        const porcentagem = parseFloat(document.getElementById('porcentagem').value);
+        let valorBase = (baseTipo === 'minimo') ? SALARIO_MINIMO_ATUAL : parseFloat(document.getElementById('valor_base').value);
+
+        if (isNaN(valorBase) || isNaN(porcentagem)) {
+            alert("Preencha todos os campos.");
+            return;
+        }
+
+        const resultado = (valorBase * (porcentagem / 100));
+        const spanValor = document.getElementById('valor_final');
+        
+        spanValor.innerHTML = `Valor da pensão: <br><strong>R$ ${resultado.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</strong>`;
+        document.getElementById('resultado').style.display = 'block';
+    }
+</script>
+
+</body>
+</html>
