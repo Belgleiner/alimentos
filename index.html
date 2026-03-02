@@ -22,25 +22,16 @@
     button { width: 100%; padding: 15px; margin-top: 20px; border: none; border-radius: 10px; background: #d88fa0; color: white; font-weight: bold; font-size: 1.1em; cursor: pointer; transition: 0.3s; }
     button:hover { background: #c5768b; }
     .resultado { margin-top: 25px; background: #fff0f4; padding: 20px; border-radius: 10px; text-align: left; border-left: 5px solid #d88fa0; display: none; }
+    .detalhe-impostos { background: #fff; padding: 10px; border-radius: 5px; margin: 10px 0; font-size: 0.85em; border: 1px solid #f2d7dc; }
     #btnWhats { background-color: #25d366; display: none; margin-top: 10px; }
     .aviso { margin-top: 30px; font-size: 0.85em; color: #999; line-height: 1.5; }
 </style>
-
-       <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#b76e79">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="Prazos TJPE">
-
-    <link rel="icon" type="image/png" sizes="192x192" href="icon.png">
-    <link rel="apple-touch-icon" href="icon.png">
 </head>
 <body>
 
 <div class="container">
-    <h1>🌸 Calculadora de Pensão Alimentícia</h1>
-    <div class="subtitulo">Calcule o valor estimado da pensão - por Belizza Araújo</div>
+    <h1>🌸 Calculadora de Pensão</h1>
+    <div class="subtitulo">Simulador por Belizza Araújo - Oficiala de Justiça</div>
 
     <label>Base do cálculo:</label>
     <select id="base" onchange="toggleCampos()">
@@ -51,16 +42,16 @@
 
     <div id="campo-salario" style="display:none;">
         <label>Rendimento Bruto (R$):</label>
-        <input type="number" id="valor_base" placeholder="0.00" step="0.01">
+        <input type="number" id="valor_base" placeholder="Ex: 4000.00" step="0.01">
         
         <div class="checkbox-container">
-            <input type="checkbox" id="descontosLegais">
-            <label for="descontosLegais">Abater descontos obrigatórios (INSS/IRPF) para obter o valor líquido.</label>
+            <input type="checkbox" id="descontosLegais" checked>
+            <label for="descontosLegais">Abater descontos obrigatórios (INSS/IRPF)</label>
         </div>
     </div>
 
     <label>Porcentagem da Pensão (%):</label>
-    <input type="number" id="porcentagem" placeholder="Ex: 30" step="0.1">
+    <input type="number" id="porcentagem" placeholder="Ex: 10" step="0.1">
 
     <button onclick="calcular()">Calcular Agora</button>
 
@@ -68,31 +59,17 @@
     <button id="btnWhats" onclick="enviarWhatsApp()">Enviar para WhatsApp</button>
 
     <div class="aviso">
-        Esta ferramenta é apenas um simulador informativo. <br>
-        🌸 <span class="satisfy">Desenvolvido por Belizza Araújo – Oficiala de Justiça do TJPE</span><br>
+        Esta ferramenta é um simulador informativo e não substitui uma decisão judicial.<br>
+        🌸 <span class="satisfy">Belizza Araújo – TJPE</span>
     </div>
 </div>
 
 <script>
-    let smOficial = 1518.00; // Valor base 2025/2026
+    let smOficial = 1518.00; 
 
     function atualizarDisplaySM() {
         const el = document.getElementById('sm-status');
-        if(el) el.innerText = `Valor Base (Vigente): R$ ${smOficial.toLocaleString('pt-BR', {minimumFractionDigits:2})}`;
-    }
-
-    async function buscarSM() {
-        atualizarDisplaySM();
-        try {
-            const controller = new AbortController();
-            setTimeout(() => controller.abort(), 1500);
-            const res = await fetch('https://api.bcb.gov.br/dados/serie/bcdata.sgs.1619/dados/ultimos/1?formato=json', { signal: controller.signal });
-            const d = await res.json();
-            if(d && d[0]) {
-                smOficial = parseFloat(d[0].valor);
-                atualizarDisplaySM();
-            }
-        } catch (e) { console.log("Modo offline."); }
+        if(el) el.innerText = `Valor Base: R$ ${smOficial.toLocaleString('pt-BR', {minimumFractionDigits:2})}`;
     }
 
     function toggleCampos() {
@@ -114,48 +91,52 @@
             return; 
         }
 
+        let inss = 0;
+        let irpf = 0;
         let valorCalculo = valorBruto;
-        let detalheDescontos = "";
+        let htmlDescontos = "";
 
         if(baseTipo === 'rendimentos' && aplicarDescontos) {
-            // 1. CÁLCULO INSS (Progressivo)
-            let inss = 0;
-            if (valorBruto <= 1412) inss = valorBruto * 0.075;
-            else if (valorBruto <= 2666.68) inss = (valorBruto * 0.09) - 21.18;
-            else if (valorBruto <= 4000.03) inss = (valorBruto * 0.12) - 101.18;
-            else if (valorBruto <= 7786.02) inss = (valorBruto * 0.14) - 181.18;
-            else inss = 908.85;
+            // INSS 2026 (Estimado)
+            if (valorBruto <= 1518) inss = valorBruto * 0.075;
+            else if (valorBruto <= 2800) inss = (valorBruto * 0.09) - 22.77;
+            else if (valorBruto <= 4200) inss = (valorBruto * 0.12) - 106.77;
+            else inss = (valorBruto * 0.14) - 190.77;
+            if (inss > 950) inss = 950; // Teto aproximado
 
-            // 2. CÁLCULO IRPF (Base = Bruto - INSS)
+            // IRPF (Base = Bruto - INSS)
             let baseIRPF = valorBruto - inss;
-            let irpf = 0;
             if (baseIRPF <= 2259.20) irpf = 0;
             else if (baseIRPF <= 2826.65) irpf = (baseIRPF * 0.075) - 169.44;
             else if (baseIRPF <= 3751.05) irpf = (baseIRPF * 0.15) - 381.44;
             else if (baseIRPF <= 4664.68) irpf = (baseIRPF * 0.225) - 662.77;
             else irpf = (baseIRPF * 0.275) - 896.00;
 
-            valorCalculo = valorBruto - inss - (irpf > 0 ? irpf : 0);
-            detalheDescontos = `%0A_(Descontos: INSS R$ ${inss.toFixed(2)} | IRPF R$ ${irpf.toFixed(2)})_`;
+            valorCalculo = valorBruto - inss - irpf;
+            
+            htmlDescontos = `
+                <div class="detalhe-impostos">
+                    <strong>Descontos Aplicados:</strong><br>
+                    INSS: R$ ${inss.toLocaleString('pt-BR', {minimumFractionDigits:2})}<br>
+                    IRPF: R$ ${irpf.toLocaleString('pt-BR', {minimumFractionDigits:2})}
+                </div>
+            `;
         }
 
-        const total = (valorCalculo * (porcento / 100));
-        const vFinal = total.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
-        const vBaseExibicao = valorCalculo.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
-
+        const totalPensao = (valorCalculo * (porcento / 100));
+        
+        // Exibição na Tela
         const resDiv = document.getElementById('resultado');
         resDiv.innerHTML = `
             <div style="line-height: 1.6;">
-                <strong style="font-size: 0.9em; color: #7a4a52;">Resultado da Simulação:</strong><br>
-                <span style="font-size: 1.1em; color: #b76e79; font-weight: bold; display:block; margin: 5px 0;">
-                    Pensão: ${vFinal}
+                <strong style="font-size: 0.9em; color: #7a4a52;">Resultado da Simulação:</strong>
+                <span style="font-size: 1.4em; color: #b76e79; font-weight: bold; display:block; margin: 5px 0;">
+                    Pensão: ${totalPensao.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}
                 </span>
-                <div style="font-size: 0.85em; color: #666; margin: 10px 0; padding-top: 8px; border-top: 1px solid #eee;">
-                    <i class="satisfy" style="font-size: 1.1em;">Dica da Oficiala:</i><br>
-                    Sempre confirme o valor a ser pago. Caso não possa pagar, procure um advogado ou Defensoria Pública.
-                </div>
-                <small style="color: #999; font-size: 0.75em;">
-                    Base Líquida: ${vBaseExibicao} | Porcentagem: ${porcento}% | ${detalheDescontos}%0A%0A
+                ${htmlDescontos}
+                <small style="color: #666;">
+                    <b>Base Líquida:</b> ${valorCalculo.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}<br>
+                    <b>Porcentagem:</b> ${porcento}%
                 </small>
             </div>
         `;
@@ -163,14 +144,16 @@
         resDiv.style.display = 'block';
         document.getElementById('btnWhats').style.display = 'block';
 
+        // Texto para o WhatsApp
+        let txtInssIrpf = aplicarDescontos ? `%0A- INSS: R$ ${inss.toFixed(2)}%0A- IRPF: R$ ${irpf.toFixed(2)}` : "";
+        
         textoWhats = `*Simulação de Pensão Alimentícia*%0A` +
                      `----------------------------%0A` +
-                     `*Base Líquida:* ${vBaseExibicao}%0A` +
+                     `*Valor da Pensão:* ${totalPensao.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}%0A` +
+                     `*Base Líquida:* ${valorCalculo.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}%0A` +
                      `*Porcentagem:* ${porcento}%25%0A` +
-                     `*Valor Estimado:* ${vFinal}%0A` +
-                     `${detalheDescontos}%0A%0A` +
-                     `*Dica da Oficiala:* Caso não possa pagar, procure um advogado ou a Defensoria Pública.%0A%0A` +
-                     `_Simulador por Belizza Araújo_`;
+                     `${txtInssIrpf}%0A%0A` +
+                     `_Calculado por Belizza Araújo_`;
     }
 
     function enviarWhatsApp() {
@@ -179,7 +162,7 @@
         }
     }
 
-    buscarSM();
+    atualizarDisplaySM();
 </script>
 </body>
 </html>
