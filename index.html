@@ -116,11 +116,11 @@
 
         let valorCalculo = valorBruto;
         let detalheWhats = "";
-        let detalheTela = "";
+        let inss = 0;
+        let irpf = 0;
 
         if(baseTipo === 'rendimentos' && aplicarDescontos) {
             // 1. CÁLCULO INSS (Progressivo conforme faixas 2026)
-            let inss = 0;
             if (valorBruto <= 1518) inss = valorBruto * 0.075;
             else if (valorBruto <= 2800) inss = (valorBruto * 0.09) - 22.77;
             else if (valorBruto <= 4200) inss = (valorBruto * 0.12) - 106.77;
@@ -128,7 +128,6 @@
 
             // 2. CÁLCULO IRPF (Base = Bruto - INSS)
             let baseIRPF = valorBruto - inss;
-            let irpf = 0;
             if (baseIRPF <= 2259.20) irpf = 0;
             else if (baseIRPF <= 2826.65) irpf = (baseIRPF * 0.075) - 169.44;
             else if (baseIRPF <= 3751.05) irpf = (baseIRPF * 0.15) - 381.44;
@@ -136,10 +135,6 @@
             else irpf = (baseIRPF * 0.275) - 896.00;
 
             valorCalculo = valorBruto - inss - (irpf > 0 ? irpf : 0);
-            
-            // Texto formatado para o navegador
-            detalheTela = `<br><b>Descontos:</b> INSS R$ ${inss.toFixed(2)} | IRPF R$ ${irpf.toFixed(2)}`;
-            // Texto formatado para WhatsApp
             detalheWhats = `%0A_(Descontos: INSS R$ ${inss.toFixed(2)} | IRPF R$ ${irpf.toFixed(2)})_`;
         }
 
@@ -147,7 +142,7 @@
         const vFinal = total.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
         const vBaseExibicao = valorCalculo.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
 
-     const resDiv = document.getElementById('resultado');
+        const resDiv = document.getElementById('resultado');
         resDiv.innerHTML = `
             <div style="line-height: 1.6;">
                 <strong style="font-size: 0.9em; color: #7a4a52;">Resultado da Simulação:</strong><br>
@@ -169,9 +164,11 @@
                 
                 <small style="color: #999; font-size: 0.75em;">
                     <strong>Base Líquida:</strong> ${vBaseExibicao} | <strong>Porcentagem:</strong> ${porcento}%
+                    ${aplicarDescontos && baseTipo === 'rendimentos' ? ` | <strong>Descontos:</strong> (INSS: R$ ${inss.toFixed(2)} + IRPF: R$ ${irpf.toFixed(2)})` : ''}
                 </small>
             </div>
         `;
+        
         resDiv.style.display = 'block';
         document.getElementById('btnWhats').style.display = 'block';
 
@@ -184,7 +181,6 @@
                      `*Dica da Oficiala:* Caso não possa pagar, procure um advogado ou a Defensoria Pública.%0A%0A` +
                      `_Simulador por Belizza Araújo_`;
     }
-
     function enviarWhatsApp() {
         if (textoWhats !== "") {
             window.open("https://api.whatsapp.com/send?text=" + textoWhats, '_blank');
