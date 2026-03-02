@@ -115,16 +115,16 @@
         }
 
         let valorCalculo = valorBruto;
-        let detalheDescontos = "";
+        let detalheWhats = "";
+        let detalheTela = "";
 
         if(baseTipo === 'rendimentos' && aplicarDescontos) {
-            // 1. CÁLCULO INSS (Progressivo)
+            // 1. CÁLCULO INSS (Progressivo conforme faixas 2026)
             let inss = 0;
-            if (valorBruto <= 1412) inss = valorBruto * 0.075;
-            else if (valorBruto <= 2666.68) inss = (valorBruto * 0.09) - 21.18;
-            else if (valorBruto <= 4000.03) inss = (valorBruto * 0.12) - 101.18;
-            else if (valorBruto <= 7786.02) inss = (valorBruto * 0.14) - 181.18;
-            else inss = 908.85;
+            if (valorBruto <= 1518) inss = valorBruto * 0.075;
+            else if (valorBruto <= 2800) inss = (valorBruto * 0.09) - 22.77;
+            else if (valorBruto <= 4200) inss = (valorBruto * 0.12) - 106.77;
+            else inss = (valorBruto * 0.14) - 190.77;
 
             // 2. CÁLCULO IRPF (Base = Bruto - INSS)
             let baseIRPF = valorBruto - inss;
@@ -136,7 +136,11 @@
             else irpf = (baseIRPF * 0.275) - 896.00;
 
             valorCalculo = valorBruto - inss - (irpf > 0 ? irpf : 0);
-            detalheDescontos = `%0A_(Descontos: INSS R$ ${inss.toFixed(2)} | IRPF R$ ${irpf.toFixed(2)})_`;
+            
+            // Texto formatado para o navegador
+            detalheTela = `<br><b>Descontos:</b> INSS R$ ${inss.toFixed(2)} | IRPF R$ ${irpf.toFixed(2)}`;
+            // Texto formatado para WhatsApp
+            detalheWhats = `%0A_(Descontos: INSS R$ ${inss.toFixed(2)} | IRPF R$ ${irpf.toFixed(2)})_`;
         }
 
         const total = (valorCalculo * (porcento / 100));
@@ -155,7 +159,7 @@
                     Sempre confirme o valor a ser pago. Caso não possa pagar, procure um advogado ou Defensoria Pública.
                 </div>
                 <small style="color: #999; font-size: 0.75em;">
-                    Base Líquida: ${vBaseExibicao} | Porcentagem: ${porcento}% | ${htmlDescontos}
+                    Base Líquida: ${vBaseExibicao} | Porcentagem: ${porcento}% ${detalheTela} ${aplicarDescontos ? ` | Descontos: (INSS R$ ${inss.toFixed(2)} + IRPF R$ ${irpf.toFixed(2)})` : ''}
                 </small>
             </div>
         `;
@@ -168,7 +172,7 @@
                      `*Base Líquida:* ${vBaseExibicao}%0A` +
                      `*Porcentagem:* ${porcento}%25%0A` +
                      `*Valor Estimado:* ${vFinal}%0A` +
-                     `${detalheDescontos}%0A%0A` +
+                     `${detalheWhats}%0A%0A` +
                      `*Dica da Oficiala:* Caso não possa pagar, procure um advogado ou a Defensoria Pública.%0A%0A` +
                      `_Simulador por Belizza Araújo_`;
     }
