@@ -147,23 +147,31 @@
         const vFinal = total.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
         const vBaseExibicao = valorCalculo.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
 
-        const resDiv = document.getElementById('resultado');
+     const resDiv = document.getElementById('resultado');
         resDiv.innerHTML = `
             <div style="line-height: 1.6;">
                 <strong style="font-size: 0.9em; color: #7a4a52;">Resultado da Simulação:</strong><br>
-                <span style="font-size: 1.1em; color: #b76e79; font-weight: bold; display:block; margin: 5px 0;">
+                <span style="font-size: 1.4em; color: #b76e79; font-weight: bold; display:block; margin: 5px 0;">
                     Pensão: ${vFinal}
                 </span>
+                
+                ${aplicarDescontos && baseTipo === 'rendimentos' ? `
+                <div style="background: #ffffff; padding: 8px; border-radius: 6px; margin: 8px 0; font-size: 0.8em; border: 1px solid #f2d7dc; color: #7a4a52;">
+                    <strong>Detalhamento dos Descontos:</strong><br>
+                    INSS: R$ ${inss.toLocaleString('pt-BR', {minimumFractionDigits:2})}<br>
+                    IRPF: R$ ${irpf.toLocaleString('pt-BR', {minimumFractionDigits:2})}
+                </div>` : ''}
+
                 <div style="font-size: 0.85em; color: #666; margin: 10px 0; padding-top: 8px; border-top: 1px solid #eee;">
                     <i class="satisfy" style="font-size: 1.1em;">Dica da Oficiala:</i><br>
                     Sempre confirme o valor a ser pago. Caso não possa pagar, procure um advogado ou Defensoria Pública.
                 </div>
+                
                 <small style="color: #999; font-size: 0.75em;">
-                    Base Líquida: ${vBaseExibicao} | Porcentagem: ${porcento}% ${detalheTela} ${aplicarDescontos ? ` | Descontos: (INSS R$ ${inss.toFixed(2)} + IRPF R$ ${irpf.toFixed(2)})` : ''}
+                    <strong>Base Líquida:</strong> ${vBaseExibicao} | <strong>Porcentagem:</strong> ${porcento}%
                 </small>
             </div>
         `;
-        
         resDiv.style.display = 'block';
         document.getElementById('btnWhats').style.display = 'block';
 
