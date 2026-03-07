@@ -93,12 +93,6 @@
     <div id="campo-salario" style="display:none;">
         <label>Rendimento Bruto (R$):</label>
         <input type="number" id="valor_base" placeholder="0.00" step="0.01">
-
-<label>Desconto de INSS (R$):</label>
-<input type="number" id="inss" placeholder="Ex: 250.00" step="0.01">
-
-<label>Desconto de IRPF (R$):</label>
-<input type="number" id="irpf" placeholder="Ex: 150.00" step="0.01">
         
         <div class="checkbox-container">
             <input type="checkbox" id="descontosLegais">
@@ -173,12 +167,6 @@
         const baseTipo = document.getElementById('base').value;
         let valorBruto = (baseTipo === 'minimo') ? smOficial : parseFloat(document.getElementById('valor_base').value);
         const aplicarDescontos = document.getElementById('descontosLegais').checked;
-const inss = parseFloat(document.getElementById("inss").value) || 0;
-const irpf = parseFloat(document.getElementById("irpf").value) || 0;
-
-// Exemplo de lógica: Base de cálculo = Bruto - (INSS + IRPF)
-let baseCalculo = rendimentoBruto - (inss + irpf);
-let valorFinal = baseCalculo * (porcentagem / 100);
         
         if(!porcento || isNaN(valorBruto) || valorBruto <= 0) { 
             alert("Por favor, preencha os valores corretamente."); 
