@@ -6,27 +6,61 @@
 <title>Calculadora de Pensão Alimentícia - Belizza Araújo</title>
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Satisfy&display=swap');
-    body { font-family: 'Segoe UI', Arial, sans-serif; background: #fdf7fa; padding: 20px; text-align: center; color: #444; }
-    .container { background: white; max-width: 600px; margin: auto; padding: 30px; border-radius: 18px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); border-top: 6px solid #b76e79; }
-    h1 { color: #b76e79; margin-bottom: 5px; font-size: 1.8em; }
+    
+    :root {
+        --bg-body: #fdf7fa;
+        --bg-container: white;
+        --color-primary: #b76e79;
+        --color-secondary: #d88fa0;
+        --color-hover: #c5768b;
+        --bg-box: #fff5f7;
+        --text-main: #444;
+        --text-label: #7a4a52;
+        --border-color: #ddd;
+    }
+    
+    body.tema-azul {
+        --bg-body: #f0f4f8;
+        --color-primary: #4a7c9d;
+        --color-secondary: #7da6c2;
+        --color-hover: #6695b5;
+        --bg-box: #eaf1f6;
+        --text-label: #3b5a70;
+    }
+
+    body.tema-cinza {
+        --bg-body: #f4f4f4;
+        --color-primary: #6c757d;
+        --color-secondary: #adb5bd;
+        --color-hover: #868e96;
+        --bg-box: #e9ecef;
+        --text-label: #495057;
+    }
+
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg-body); padding: 20px; text-align: center; color: var(--text-main); transition: 0.3s; }
+    .container { background: var(--bg-container); max-width: 600px; margin: auto; padding: 30px; border-radius: 18px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); border-top: 6px solid var(--color-primary); }
+    h1 { color: var(--color-primary); margin-bottom: 5px; font-size: 1.8em; }
     .subtitulo { font-size: 0.9em; color: #888; margin-bottom: 20px; }
-    .satisfy { font-family: 'Satisfy', cursive; font-size: 1.1em; color: #b76e79; }
-    label { display: block; margin-top: 15px; text-align: left; font-weight: bold; color: #7a4a52; }
-    select, input { width: 100%; padding: 12px; margin-top: 5px; border-radius: 8px; border: 1px solid #ddd; box-sizing: border-box; font-size: 16px; }
+    .satisfy { font-family: 'Satisfy', cursive; font-size: 1.1em; color: var(--color-primary); }
+    label { display: block; margin-top: 15px; text-align: left; font-weight: bold; color: var(--text-label); }
+    select, input { width: 100%; padding: 12px; margin-top: 5px; border-radius: 8px; border: 1px solid var(--border-color); box-sizing: border-box; font-size: 16px; }
     .status-sm { font-size: 0.8em; color: #999; text-align: left; margin-top: 5px; }
     
-    .checkbox-container { display: flex; align-items: center; margin-top: 15px; background: #fff5f7; padding: 12px; border-radius: 8px; border: 1px dashed #d88fa0; }
+    .checkbox-container { display: flex; align-items: center; margin-top: 15px; background: var(--bg-box); padding: 12px; border-radius: 8px; border: 1px dashed var(--color-secondary); }
     .checkbox-container input { width: auto; margin-right: 10px; cursor: pointer; height: 20px; width: 20px; }
-    .checkbox-container label { margin-top: 0; font-size: 0.85em; cursor: pointer; color: #7a4a52; text-align: left; }
+    .checkbox-container label { margin-top: 0; font-size: 0.85em; cursor: pointer; color: var(--text-label); text-align: left; }
 
-    button { width: 100%; padding: 15px; margin-top: 20px; border: none; border-radius: 10px; background: #d88fa0; color: white; font-weight: bold; font-size: 1.1em; cursor: pointer; transition: 0.3s; }
-    button:hover { background: #c5768b; }
-    .resultado { margin-top: 25px; background: #fff0f4; padding: 20px; border-radius: 10px; text-align: left; border-left: 5px solid #d88fa0; display: none; }
+    button { width: 100%; padding: 15px; margin-top: 20px; border: none; border-radius: 10px; background: var(--color-secondary); color: white; font-weight: bold; font-size: 1.1em; cursor: pointer; transition: 0.3s; }
+    button:hover { background: var(--color-hover); }
+    .resultado { margin-top: 25px; background: var(--bg-box); padding: 20px; border-radius: 10px; text-align: left; border-left: 5px solid var(--color-secondary); display: none; }
     #btnWhats { background-color: #25d366; display: none; margin-top: 10px; }
     .aviso { margin-top: 30px; font-size: 0.85em; color: #999; line-height: 1.5; }
+    
+    .seletor-cor { background: #eee; padding: 10px; border-radius: 8px; display: inline-flex; gap: 10px; margin-bottom: 15px; align-items: center; }
+    .btn-cor { width: 25px; height: 25px; border-radius: 50%; cursor: pointer; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
 </style>
 
-       <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#b76e79">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -39,6 +73,13 @@
 <body>
 
 <div class="container">
+    <div class="seletor-cor">
+        <span style="font-size: 0.8em; color: #666; font-weight: bold;">Tema:</span>
+        <div class="btn-cor" style="background: #b76e79;" onclick="mudarTema('')" title="Clássico Rosé"></div>
+        <div class="btn-cor" style="background: #4a7c9d;" onclick="mudarTema('tema-azul')" title="Sobriedade Azul"></div>
+        <div class="btn-cor" style="background: #6c757d;" onclick="mudarTema('tema-cinza')" title="Minimalista Cinza"></div>
+    </div>
+
     <h1>🌸 Calculadora de Pensão Alimentícia</h1>
     <div class="subtitulo">Calcule o valor estimado da pensão - por Belizza Araújo</div>
 
@@ -47,7 +88,7 @@
         <option value="minimo">Salário Mínimo Vigente</option>
         <option value="rendimentos">Rendimentos do Pagador</option>
     </select>
-    <div id="sm-status" class="status-sm">Carregando salário...</div>
+    <div id="sm-status" class="status-sm">Verificando dados (offline ou online)...</div>
 
     <div id="campo-salario" style="display:none;">
         <label>Rendimento Bruto (R$):</label>
@@ -74,15 +115,30 @@
 </div>
 
 <script>
-    let smOficial = 1518.00; // Valor base 2025/2026
+    let smOficial = 1518.00; // Valor base supletivo
 
-    function atualizarDisplaySM() {
+    function mudarTema(classeTema) {
+        document.body.className = classeTema;
+        const metaThemeColor = document.querySelector("meta[name=theme-color]");
+        if(classeTema === 'tema-azul') metaThemeColor.setAttribute("content", "#4a7c9d");
+        else if(classeTema === 'tema-cinza') metaThemeColor.setAttribute("content", "#6c757d");
+        else metaThemeColor.setAttribute("content", "#b76e79");
+    }
+
+    function atualizarDisplaySM(origem = "Offline") {
         const el = document.getElementById('sm-status');
-        if(el) el.innerText = `Valor Base (Vigente): R$ ${smOficial.toLocaleString('pt-BR', {minimumFractionDigits:2})}`;
+        if(el) el.innerText = `Valor Base (Vigente / ${origem}): R$ ${smOficial.toLocaleString('pt-BR', {minimumFractionDigits:2})}`;
     }
 
     async function buscarSM() {
-        atualizarDisplaySM();
+        let smSalvo = localStorage.getItem('sm_cache_oficiala');
+        if (smSalvo) {
+            smOficial = parseFloat(smSalvo);
+            atualizarDisplaySM("Salvo");
+        } else {
+            atualizarDisplaySM("Padrão");
+        }
+
         try {
             const controller = new AbortController();
             setTimeout(() => controller.abort(), 1500);
@@ -90,9 +146,12 @@
             const d = await res.json();
             if(d && d[0]) {
                 smOficial = parseFloat(d[0].valor);
-                atualizarDisplaySM();
+                localStorage.setItem('sm_cache_oficiala', smOficial);
+                atualizarDisplaySM("Online");
             }
-        } catch (e) { console.log("Modo offline."); }
+        } catch (e) {
+            console.log("Modo offline ativo ou timeout na API do Banco Central.");
+        }
     }
 
     function toggleCampos() {
@@ -120,13 +179,11 @@
         let irpf = 0;
 
         if(baseTipo === 'rendimentos' && aplicarDescontos) {
-            // 1. CÁLCULO INSS (Progressivo conforme faixas 2026)
             if (valorBruto <= 1518) inss = valorBruto * 0.075;
             else if (valorBruto <= 2800) inss = (valorBruto * 0.09) - 22.77;
             else if (valorBruto <= 4200) inss = (valorBruto * 0.12) - 106.77;
             else inss = (valorBruto * 0.14) - 190.77;
 
-            // 2. CÁLCULO IRPF (Base = Bruto - INSS)
             let baseIRPF = valorBruto - inss;
             if (baseIRPF <= 2259.20) irpf = 0;
             else if (baseIRPF <= 2826.65) irpf = (baseIRPF * 0.075) - 169.44;
@@ -145,13 +202,13 @@
         const resDiv = document.getElementById('resultado');
         resDiv.innerHTML = `
             <div style="line-height: 1.6;">
-                <strong style="font-size: 0.9em; color: #7a4a52;">Resultado da Simulação:</strong><br>
-                <span style="font-size: 1.4em; color: #b76e79; font-weight: bold; display:block; margin: 5px 0;">
+                <strong style="font-size: 0.9em; color: var(--text-label);">Resultado da Simulação:</strong><br>
+                <span style="font-size: 1.4em; color: var(--color-primary); font-weight: bold; display:block; margin: 5px 0;">
                     Pensão: ${vFinal}
                 </span>
 
-<div style="background: #ffffff; padding: 12px; border-radius: 8px; margin: 15px 0; font-size: 0.85em; color: #666; border: 1px solid #f2d7dc; box-shadow: 0 2px 5px rgba(0,0,0,0.02);">
-                    <span class="satisfy" style="font-size: 1.2em;">Dica da Oficiala:</span><br>
+                <div style="background: rgba(255,255,255,0.7); padding: 12px; border-radius: 8px; margin: 15px 0; font-size: 0.85em; color: #666; border: 1px solid var(--border-color); box-shadow: 0 2px 5px rgba(0,0,0,0.02);">
+                    <span class="satisfy" style="font-size: 1.2em; color: var(--color-primary);">Dica da Oficiala:</span><br>
                     Sempre confirme o valor a ser pago. Caso não possa pagar, procure um advogado ou Defensoria Pública.
                 </div>
                 
@@ -172,13 +229,20 @@
                      `*Valor Estimado:* ${vFinal}%0A` +
                      `${detalheWhats}%0A%0A` +
                      `*Dica da Oficiala:* Caso não possa pagar, procure um advogado ou a Defensoria Pública.%0A%0A` +
-                     `_Simulador por Belizza Araújo_`;
+                     `_Simulador por Belizza Araújo - Oficiala de Justiça do TJPE_`;
     }
+    
     function enviarWhatsApp() {
         if (textoWhats !== "") {
             window.open("https://api.whatsapp.com/send?text=" + textoWhats, '_blank');
         }
     }
+
+    if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js')
+    .then(() => console.log("Calculadora pronta para uso offline!"))
+    .catch((err) => console.log("Erro ao registrar modo offline:", err));
+}
 
     buscarSM();
 </script>
