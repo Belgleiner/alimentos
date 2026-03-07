@@ -58,6 +58,49 @@
     
     .seletor-cor { background: #eee; padding: 10px; border-radius: 8px; display: inline-flex; gap: 10px; margin-bottom: 15px; align-items: center; }
     .btn-cor { width: 25px; height: 25px; border-radius: 50%; cursor: pointer; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+
+/* Estilo do Botão Switch */
+.switch-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 15px;
+    font-size: 0.85em;
+    font-weight: bold;
+    color: var(--text-label);
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 20px;
+}
+
+.switch input { opacity: 0; width: 0; height: 0; }
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 20px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 14px; width: 14px;
+    left: 3px; bottom: 3px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider { background-color: var(--color-primary); }
+input:checked + .slider:before { transform: translateX(20px); }
 </style>
 
     <link rel="manifest" href="manifest.json">
@@ -95,22 +138,28 @@
         <label>Rendimento Bruto (R$):</label>
         <input type="number" id="valor_base" placeholder="0.00" step="0.01">
         
-        <div class="checkbox-container">
-            <input type="checkbox" id="descontosLegais">
-            <label for="descontosLegais">Abater descontos obrigatórios (INSS/IRPF) para obter o valor líquido.</label>
-        </div>
-
-            <div id="campos-manuais" style="display:none; margin-top: 10px; padding: 10px; background: rgba(0,0,0,0.05); border-radius: 8px;">
-    <label style="font-size: 0.8em;">INSS Manual (R$):</label>
-    <input type="number" id="manual_inss" placeholder="0.00" step="0.01">
-    
-    <label style="font-size: 0.8em;">IRPF Manual (R$):</label>
-    <input type="number" id="manual_irpf" placeholder="0.00" step="0.01">
+       <div class="checkbox-container">
+    <input type="checkbox" id="descontosLegais" onchange="document.getElementById('opcoes-desconto').style.display = this.checked ? 'block' : 'none'">
+    <label for="descontosLegais">Abater descontos obrigatórios (INSS/IRPF).</label>
 </div>
 
-        <div class="checkbox-container" style="border: none; background: none;">
-    <input type="checkbox" id="usarManual" onclick="document.getElementById('campos-manuais').style.display = this.checked ? 'block' : 'none'">
-    <label for="usarManual">Quero informar os descontos manualmente.</label>
+<div id="opcoes-desconto" style="display:none; margin-top: 10px;">
+    <div class="switch-container">
+        <span>Automático</span>
+        <label class="switch">
+            <input type="checkbox" id="usarManual" onchange="document.getElementById('campos-manuais').style.display = this.checked ? 'block' : 'none'">
+            <span class="slider"></span>
+        </label>
+        <span>Manual</span>
+    </div>
+
+    <div id="campos-manuais" style="display:none; margin-top: 10px; padding: 15px; background: rgba(0,0,0,0.03); border-radius: 8px; border: 1px dashed var(--color-secondary);">
+        <label style="font-size: 0.8em; margin-top: 0;">Valor do INSS (R$):</label>
+        <input type="number" id="manual_inss" placeholder="0.00" step="0.01">
+        
+        <label style="font-size: 0.8em; margin-top: 10px;">Valor do IRPF (R$):</label>
+        <input type="number" id="manual_irpf" placeholder="0.00" step="0.01">
+    </div>
 </div>
         
     </div>
