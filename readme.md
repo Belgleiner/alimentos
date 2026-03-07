@@ -35,7 +35,7 @@ Contagem em Dias Úteis: Totalmente adaptada ao CPC/2015, excluindo automaticame
 Suspensões de Prazo: Permite a inserção manual de suspensões excepcionais (como as previstas em atos da Presidência do TJPE).
 
 Utilidade Prática:
-Auxilia o Oficial de Justiça na contagem de prazos para devolução de mandados e cumprimento de ordens urgentes, evitando preclusões e garantindo o cumprimento dos prazos regimentais.
+Auxilia o jurisdicionado na contagem de prazos para cumprimento de ordens judiciais, evitando preclusões e garantindo o cumprimento dos prazos regimentais.
 
 🛠️ Especificações Técnicas (Core)
 Tecnologia Offline-First: Utiliza Service Workers para garantir que, mesmo em diligências em locais sem sinal de internet, as ferramentas abram e funcionem normalmente.
@@ -56,5 +56,6 @@ Belizza Araújo
 "A tecnologia deve servir como ponte para o acesso à justiça, traduzindo o 'juridiquês' em números e datas compreensíveis para todos."
 
 Oficiala de Justiça do Tribunal de Justiça de Pernambuco (TJPE).
+
 
 Estudante de Pós-Graduação em Direito Médico: Aplicando conceitos de precisão e ética técnica no desenvolvimento de soluções digitais.
