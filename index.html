@@ -80,6 +80,7 @@
         <div class="btn-cor" style="background: #6c757d;" onclick="mudarTema('tema-cinza')" title="Minimalista Cinza"></div>
     </div>
 
+   
     <h1>🌸 Calculadora de Pensão Alimentícia</h1>
     <div class="subtitulo">Calcule o valor estimado da pensão - por Belizza Araújo</div>
 
@@ -98,6 +99,20 @@
             <input type="checkbox" id="descontosLegais">
             <label for="descontosLegais">Abater descontos obrigatórios (INSS/IRPF) para obter o valor líquido.</label>
         </div>
+
+            <div id="campos-manuais" style="display:none; margin-top: 10px; padding: 10px; background: rgba(0,0,0,0.05); border-radius: 8px;">
+    <label style="font-size: 0.8em;">INSS Manual (R$):</label>
+    <input type="number" id="manual_inss" placeholder="0.00" step="0.01">
+    
+    <label style="font-size: 0.8em;">IRPF Manual (R$):</label>
+    <input type="number" id="manual_irpf" placeholder="0.00" step="0.01">
+</div>
+
+        <div class="checkbox-container" style="border: none; background: none;">
+    <input type="checkbox" id="usarManual" onclick="document.getElementById('campos-manuais').style.display = this.checked ? 'block' : 'none'">
+    <label for="usarManual">Quero informar os descontos manualmente.</label>
+</div>
+        
     </div>
 
     <label>Porcentagem da Pensão (%):</label>
@@ -179,21 +194,30 @@
         let irpf = 0;
 
         if(baseTipo === 'rendimentos' && aplicarDescontos) {
-            if (valorBruto <= 1518) inss = valorBruto * 0.075;
-            else if (valorBruto <= 2800) inss = (valorBruto * 0.09) - 22.77;
-            else if (valorBruto <= 4200) inss = (valorBruto * 0.12) - 106.77;
-            else inss = (valorBruto * 0.14) - 190.77;
+    const manualAtivo = document.getElementById('usarManual').checked;
 
-            let baseIRPF = valorBruto - inss;
-            if (baseIRPF <= 2259.20) irpf = 0;
-            else if (baseIRPF <= 2826.65) irpf = (baseIRPF * 0.075) - 169.44;
-            else if (baseIRPF <= 3751.05) irpf = (baseIRPF * 0.15) - 381.44;
-            else if (baseIRPF <= 4664.68) irpf = (baseIRPF * 0.225) - 662.77;
-            else irpf = (baseIRPF * 0.275) - 896.00;
+    if (manualAtivo) {
+        // Pega os valores digitados manualmente
+        inss = parseFloat(document.getElementById('manual_inss').value) || 0;
+        irpf = parseFloat(document.getElementById('manual_irpf').value) || 0;
+    } else {
+        // Mantém sua lógica automática atual
+        if (valorBruto <= 1518) inss = valorBruto * 0.075;
+        else if (valorBruto <= 2800) inss = (valorBruto * 0.09) - 22.77;
+        else if (valorBruto <= 4200) inss = (valorBruto * 0.12) - 106.77;
+        else inss = (valorBruto * 0.14) - 190.77;
 
-            valorCalculo = valorBruto - inss - (irpf > 0 ? irpf : 0);
-            detalheWhats = `%0A_(Descontos: INSS R$ ${inss.toFixed(2)} | IRPF R$ ${irpf.toFixed(2)})_`;
-        }
+        let baseIRPF = valorBruto - inss;
+        if (baseIRPF <= 2259.20) irpf = 0;
+        else if (baseIRPF <= 2826.65) irpf = (baseIRPF * 0.075) - 169.44;
+        else if (baseIRPF <= 3751.05) irpf = (baseIRPF * 0.15) - 381.44;
+        else if (baseIRPF <= 4664.68) irpf = (baseIRPF * 0.225) - 662.77;
+        else irpf = (baseIRPF * 0.275) - 896.00;
+    }
+
+    valorCalculo = valorBruto - inss - (irpf > 0 ? irpf : 0);
+    detalheWhats = `%0A_(Descontos: INSS R$ ${inss.toFixed(2)} | IRPF R$ ${irpf.toFixed(2)})_`;
+}
 
         const total = (valorCalculo * (porcento / 100));
         const vFinal = total.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
