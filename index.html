@@ -179,14 +179,15 @@ input:checked + .slider:before { transform: translateX(20px); }
     <label>Porcentagem da Pensão (%):</label>
     <input type="number" id="porcentagem" placeholder="Ex: 30" step="0.1">
 
-<div class="checkbox-container" style="border-style: solid; border-width: 1px; margin-bottom: 10px;">
+<div id="campo-extras" style="display:none;">
+    <div class="checkbox-container">
     <input type="checkbox" id="incluirExtras">
     <label for="incluirExtras">Calcular também sobre o 13º e Férias</label>
 </div>
-<p style="font-size: 0.75em; color: #888; text-align: left; margin-top: -5px; margin-bottom: 15px;">
-    *Marque se a decisão judicial incluir essas verbas.
+<p style="font-size: 0.75em; color: #888; text-align: left; margin-top: -5px;">
+    Marque se a decisão judicial incluir essas verbas.
 </p>
-  
+  </div>
     <button onclick="calcular()">Calcular Agora</button>
 
     <div id="resultado" class="resultado"></div>
@@ -238,11 +239,24 @@ input:checked + .slider:before { transform: translateX(20px); }
         }
     }
 
-    function toggleCampos() {
-        document.getElementById('campo-salario').style.display = (document.getElementById('base').value === 'rendimentos') ? 'block' : 'none';
-        document.getElementById('resultado').style.display = 'none';
-        document.getElementById('btnWhats').style.display = 'none';
+ function toggleCampos() {
+    const base = document.getElementById('base').value;
+    const isRendimentos = (base === 'rendimentos');
+    
+    // Mostra/Esconde os campos de salário e de extras pontilhados
+    document.getElementById('campo-salario').style.display = isRendimentos ? 'block' : 'none';
+    document.getElementById('campo-extras').style.display = isRendimentos ? 'block' : 'none';
+    
+    // Limpa a seleção de extras se mudar para Salário Mínimo
+    if (!isRendimentos) {
+        document.getElementById('incluirExtras').checked = false;
+      document.getElementById('descontosLegais').checked = false;
+        document.getElementById('opcoes-desconto').style.display = 'none';
     }
+
+    document.getElementById('resultado').style.display = 'none';
+    document.getElementById('btnWhats').style.display = 'none';
+}
 
     let textoWhats = "";
 
