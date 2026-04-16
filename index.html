@@ -146,11 +146,9 @@ input:checked + .slider:before { transform: translateX(20px); }
     <div id="sm-status" class="status-sm">Verificando dados (offline ou online)...</div>
 
     <div id="campo-salario" style="display:none;">
-        <label>Rendimento Bruto (R$):</label>
+        <label>Rendimento Bruto (R$ - Salário sem descontos):</label>
         <input type="number" id="valor_base" placeholder="0.00" step="0.01">
-      <p style="font-size: 0.75em; color: #7a4a52; text-align: left; margin-top: -10px;">
-    💡 <strong>Dica:</strong> O rendimento bruto é o valor total antes de qualquer desconto.
-</p>
+
         
        <div class="checkbox-container">
     <input type="checkbox" id="descontosLegais" onchange="document.getElementById('opcoes-desconto').style.display = this.checked ? 'block' : 'none'">
@@ -183,7 +181,7 @@ input:checked + .slider:before { transform: translateX(20px); }
 
 <div class="checkbox-container" style="border-style: solid; border-width: 1px; margin-bottom: 10px;">
     <input type="checkbox" id="incluirExtras">
-    <label for="incluirExtras">Calcular impacto no 13º e Terço de Férias</label>
+    <label for="incluirExtras">Calcular também sobre o 13º e Férias</label>
 </div>
 <p style="font-size: 0.75em; color: #888; text-align: left; margin-top: -5px; margin-bottom: 15px;">
     *Marque se a decisão judicial incluir essas verbas.
