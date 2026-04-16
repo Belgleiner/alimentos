@@ -73,11 +73,11 @@
 .legenda-extra {
     font-size: 0.75em;
     color: #888;
-    text-align: left;
-    margin-top: 4px; /* Distância curta do checkbox para manter a conexão */
+    text-align: center;
+    margin-top: 5px; /* Distância curta do checkbox para manter a conexão */
     margin-bottom: 15px; /* Distância maior para o próximo elemento (botão ou campo) */
-    margin-left: 32px; /* Alinha o texto com o início da frase do checkbox, ignorando o quadrado do input */
-    line-height: 1.3;
+      line-height: 1.4;
+    display: block;     /* Garante que ocupe a linha toda para centralizar corretamente */
 }
   
 /* Estilo do Botão Switch */
@@ -153,7 +153,7 @@ input:checked + .slider:before { transform: translateX(20px); }
         <option value="minimo">Salário Mínimo Vigente</option>
         <option value="rendimentos">Rendimentos do Pagador</option>
     </select>
-    <div id="sm-status" class="status-sm">Verificando dados (offline ou online)...</div>
+    <div id="sm-status" class="legenda-extra">Verificando dados (offline ou online)...</div>
 
     <div id="campo-salario" style="display:none;">
         <label>Rendimento Bruto (R$ - Salário sem descontos):</label>
