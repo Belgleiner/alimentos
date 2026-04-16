@@ -148,6 +148,9 @@ input:checked + .slider:before { transform: translateX(20px); }
     <div id="campo-salario" style="display:none;">
         <label>Rendimento Bruto (R$):</label>
         <input type="number" id="valor_base" placeholder="0.00" step="0.01">
+      <p style="font-size: 0.75em; color: #7a4a52; text-align: left; margin-top: -10px;">
+    💡 <strong>Dica:</strong> O rendimento bruto é o valor total antes de qualquer desconto.
+</p>
         
        <div class="checkbox-container">
     <input type="checkbox" id="descontosLegais" onchange="document.getElementById('opcoes-desconto').style.display = this.checked ? 'block' : 'none'">
@@ -178,6 +181,14 @@ input:checked + .slider:before { transform: translateX(20px); }
     <label>Porcentagem da Pensão (%):</label>
     <input type="number" id="porcentagem" placeholder="Ex: 30" step="0.1">
 
+<div class="checkbox-container" style="border-style: solid; border-width: 1px; margin-bottom: 10px;">
+    <input type="checkbox" id="incluirExtras">
+    <label for="incluirExtras">Calcular impacto no 13º e Terço de Férias</label>
+</div>
+<p style="font-size: 0.75em; color: #888; text-align: left; margin-top: -5px; margin-bottom: 15px;">
+    *Marque se a decisão judicial incluir essas verbas.
+</p>
+  
     <button onclick="calcular()">Calcular Agora</button>
 
     <div id="resultado" class="resultado"></div>
@@ -242,7 +253,8 @@ input:checked + .slider:before { transform: translateX(20px); }
         const baseTipo = document.getElementById('base').value;
         let valorBruto = (baseTipo === 'minimo') ? smOficial : parseFloat(document.getElementById('valor_base').value);
         const aplicarDescontos = document.getElementById('descontosLegais').checked;
-        
+const incluirExtras = document.getElementById('incluirExtras').checked;
+      
         if(!porcento || isNaN(valorBruto) || valorBruto <= 0) { 
             alert("Por favor, preencha os valores corretamente."); 
             return; 
@@ -283,6 +295,20 @@ input:checked + .slider:before { transform: translateX(20px); }
         const vFinal = total.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
         const vBaseExibicao = valorCalculo.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
 
+// Cálculo de extras
+    let textoExtras = "";
+    let extrasWhats = "";
+    if(incluirExtras) {
+        const valorTerco = (total / 3).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
+        textoExtras = `
+            <div style="margin-top: 10px; padding-top: 10px; border-top: 1px dashed #ccc; font-size: 0.85em;">
+                <strong>Projeções Adicionais:</strong><br>
+                🎁 13º Salário: ${vFinal}<br>
+                🏖️ Terço de Férias: ${valorTerco}
+            </div>`;
+        extrasWhats = `%0A*13º Salário:* ${vFinal}%0A*Terço de Férias:* ${valorTerco}`;
+    }
+      
         const resDiv = document.getElementById('resultado');
         resDiv.innerHTML = `
             <div style="line-height: 1.6;">
@@ -290,10 +316,10 @@ input:checked + .slider:before { transform: translateX(20px); }
                 <span style="font-size: 1.4em; color: var(--color-primary); font-weight: bold; display:block; margin: 5px 0;">
                     Pensão: ${vFinal}
                 </span>
-
+${textoExtras}
                 <div style="background: rgba(255,255,255,0.7); padding: 12px; border-radius: 8px; margin: 15px 0; font-size: 0.85em; color: #666; border: 1px solid var(--border-color); box-shadow: 0 2px 5px rgba(0,0,0,0.02);">
                     <span class="satisfy" style="font-size: 1.2em; color: var(--color-primary);">Dica da Oficiala:</span><br>
-                    Sempre confirme o valor a ser pago. Caso não possa pagar, procure um advogado ou Defensoria Pública.
+                    Sempre confirme o valor a ser pago. O pagamento deve ser feito até o dia fixado pelo juiz. Caso não possa pagar, procure um advogado ou Defensoria Pública.
                 </div>
                 
                 <small style="color: #999; font-size: 0.75em;">
@@ -311,6 +337,7 @@ input:checked + .slider:before { transform: translateX(20px); }
                      `*Base Líquida:* ${vBaseExibicao}%0A` +
                      `*Porcentagem:* ${porcento}%25%0A` +
                      `*Valor Estimado:* ${vFinal}%0A` +
+          `${extrasWhats}%0A` +
                      `${detalheWhats}%0A%0A` +
                      `*Dica da Oficiala:* Caso não possa pagar, procure um advogado ou a Defensoria Pública.%0A%0A` +
                      `_Simulador por Belizza Araújo - Oficiala de Justiça do TJPE_`;
