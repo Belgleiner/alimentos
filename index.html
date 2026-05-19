@@ -335,7 +335,6 @@ const incluirExtras = document.getElementById('incluirExtras').checked;
     valorCalculo = valorBruto - inss - irpf;
     detalheWhats = `%0A_(Descontos: INSS R$ ${inss.toFixed(2)} | IRPF R$ ${irpf.toFixed(2)})_`;
 }
-}
 
         const total = (valorCalculo * (porcento / 100));
         const vFinal = total.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
