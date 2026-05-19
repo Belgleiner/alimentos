@@ -304,16 +304,37 @@ const incluirExtras = document.getElementById('incluirExtras').checked;
         else if (valorBruto <= 4200) inss = (valorBruto * 0.12) - 106.77;
         else inss = (valorBruto * 0.14) - 190.77;
 
-        let baseIRPF = valorBruto - inss;
-        if (baseIRPF <= 2259.20) irpf = 0;
-        else if (baseIRPF <= 2826.65) irpf = (baseIRPF * 0.075) - 169.44;
-        else if (baseIRPF <= 3751.05) irpf = (baseIRPF * 0.15) - 381.44;
-        else if (baseIRPF <= 4664.68) irpf = (baseIRPF * 0.225) - 662.77;
-        else irpf = (baseIRPF * 0.275) - 896.00;
+       let baseIRPF = valorBruto - inss;
+
+        // 2. Cálculo do Imposto de Renda Base (Tradicional)
+        let impostoBase = 0;
+        if (baseIRPF <= 2428.80) impostoBase = 0;
+        else if (baseIRPF <= 2826.65) impostoBase = (baseIRPF * 0.075) - 182.16;
+        else if (baseIRPF <= 3751.05) impostoBase = (baseIRPF * 0.15) - 394.16;
+        else if (baseIRPF <= 4664.68) impostoBase = (baseIRPF * 0.225) - 675.49;
+        else impostoBase = (baseIRPF * 0.275) - 908.73;
+
+        if (impostoBase < 0) impostoBase = 0;
+
+        // 3. Aplicação das Regras de Transição da Nova Tabela
+        if (valorBruto <= 5000) {
+            irpf = 0; // Totalmente ISENTO até R$ 5.000,00
+        } else if (valorBruto <= 7350) {
+            // Regra oficial de transição: Redução diminui à medida que o salário chega em 7350
+            let reducao = 978.62 - (0.133145 * valorBruto);
+            if (reducao < 0) reducao = 0;
+            
+            irpf = impostoBase - reducao;
+            if (irpf < 0) irpf = 0;
+        } else {
+            // ACIMA DE R$ 7.350,00: Sem redução. Paga a alíquota cheia tradicional.
+            irpf = impostoBase;
+        }
     }
 
-    valorCalculo = valorBruto - inss - (irpf > 0 ? irpf : 0);
+    valorCalculo = valorBruto - inss - irpf;
     detalheWhats = `%0A_(Descontos: INSS R$ ${inss.toFixed(2)} | IRPF R$ ${irpf.toFixed(2)})_`;
+}
 }
 
         const total = (valorCalculo * (porcento / 100));
